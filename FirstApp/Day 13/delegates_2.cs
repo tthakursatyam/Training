@@ -1,11 +1,6 @@
 using System;
 using System.Collections.Generic;
-
-
-// 1. DEFINITION: The "Contract" for any security response.
-// Any method responding to an alert must be void and take a string location.
-
-public delegate void SecurityAction(string zone); // definition
+public delegate void SecurityAction(string zone); 
 
 public class MotionSensor
 {

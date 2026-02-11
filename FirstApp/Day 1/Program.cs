@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using LI= LibrarySystem.Items;
 using LU= LibrarySystem.Users;
+using System.Diagnostics;
 class Program
 {
     static void Main()
@@ -490,17 +491,11 @@ class Program
         // AlarmSystem siren = new AlarmSystem();
         // PoliceNotifier police = new PoliceNotifier();
 
-        // // 2. INSTANTIATION & MULTICASTING
-        // // We "Subscribe" different methods to the sensor's delegate
         // SecurityAction panicSequence = siren.SoundSiren; // Assignment of methods
         // panicSequence += police.CallDispatch;
 
-        // // Linking the sequence to the sensor
-        // livingRoomSensor.OnEmergency = panicSequence;
-        // // class_object.delegate_instance = delegate_instance_multicast
-
-        // // Simulation
         // livingRoomSensor.DetectIntruder("Main Lobby");
+        //panicSequence("Main Lobby");
 
 
                         //Day 13 task//
@@ -518,6 +513,63 @@ class Program
         //Day14_Directory.func1();
         //Day14_Directory.func2();
 
-        Day14_task_Program.main();
+        //Day14_task_Program.main();
+
+                                ///***   Day 15  ***///
+       
+        // Trace.Listeners.Add(new ConsoleTraceListener());
+
+        // Trace.WriteLine("Application execuation Started");
+        // int a = 10;
+        // int b = 0;
+        // try
+        // {
+        //     int result = a/b;
+        //     Console.WriteLine(result);
+        // }
+        // catch(Exception ex)
+        // {
+        //     Trace.WriteLine("Exception occured: "+ex.Message);
+        // }
+        // Trace.WriteLine("Application ended");
+        //Debug.func1();
+
+        //linq.func1();
+        //linq.func2();
+        //linq.func3();
+        //linq.func4();
+        //linq.func5();
+        
+                        //Day 15 task//
+
+        //AutonomousRobot.AI.Program.main();
+
+
+
+                        //***    Day 16         ***//
+        //Assemble.func1();
+
+        // Threading.main();
+
+        //parallel.func1();
+
+
+                        //***         Day 17           ***//
+        // Process_1.func1();
+        // Process_2.func2();
+        // Process_3.func3();
+        // Process_4.func4();
+
+
+
+                        //***         Day 18           ***//
+        //D18_task.func();
+                        //***         Day 19           ***//
+        //D19_Practice_task.Func1();
+        //D19_Practice_task_2.Func1();
+        //D19_Practice_task_3.Func1();
+        D19_Practice_task_4.Func1();
      }
+
+        
 }
