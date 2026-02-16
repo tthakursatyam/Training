@@ -10,7 +10,6 @@
             Author = "John Sharp", 
             Genre = "Programming" 
         };
-
         library.AddItem(book1);
 
         var programmingBooks = library["Programming"];

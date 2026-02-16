@@ -36,6 +36,7 @@ public class Catalog<T> where T : Book
     public IEnumerable<T> FindBooks(Func<T, bool> predicate)
     {
         // TODO: Use LINQ Where with predicate
+        
         return _items.Where(predicate);
     }
 }
