@@ -1,0 +1,15 @@
+D:\Study\Cg Training\Saturday Projects\Patient Management System\obj\Debug\net10.0\Patient Management System.GeneratedMSBuildEditorConfig.editorconfig
+D:\Study\Cg Training\Saturday Projects\Patient Management System\obj\Debug\net10.0\Patient Management System.AssemblyInfoInputs.cache
+D:\Study\Cg Training\Saturday Projects\Patient Management System\obj\Debug\net10.0\Patient Management System.AssemblyInfo.cs
+D:\Study\Cg Training\Saturday Projects\Patient Management System\obj\Debug\net10.0\Patient Management System.csproj.CoreCompileInputs.cache
+D:\Study\Cg Training\Saturday Projects\Patient Management System\obj\Debug\net10.0\Patient Management System.sourcelink.json
+D:\Study\Cg Training\Saturday Projects\Patient Management System\bin\Debug\net10.0\Patient Management System.exe
+D:\Study\Cg Training\Saturday Projects\Patient Management System\bin\Debug\net10.0\Patient Management System.deps.json
+D:\Study\Cg Training\Saturday Projects\Patient Management System\bin\Debug\net10.0\Patient Management System.runtimeconfig.json
+D:\Study\Cg Training\Saturday Projects\Patient Management System\bin\Debug\net10.0\Patient Management System.dll
+D:\Study\Cg Training\Saturday Projects\Patient Management System\bin\Debug\net10.0\Patient Management System.pdb
+D:\Study\Cg Training\Saturday Projects\Patient Management System\obj\Debug\net10.0\Patient Management System.dll
+D:\Study\Cg Training\Saturday Projects\Patient Management System\obj\Debug\net10.0\refint\Patient Management System.dll
+D:\Study\Cg Training\Saturday Projects\Patient Management System\obj\Debug\net10.0\Patient Management System.pdb
+D:\Study\Cg Training\Saturday Projects\Patient Management System\obj\Debug\net10.0\Patient Management System.genruntimeconfig.cache
+D:\Study\Cg Training\Saturday Projects\Patient Management System\obj\Debug\net10.0\ref\Patient Management System.dll
