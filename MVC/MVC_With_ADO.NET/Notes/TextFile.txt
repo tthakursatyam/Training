@@ -1,0 +1,5 @@
+﻿
+First Add connection string in appsettings.json file
+add a new class of Student data in data folder and add the following code here we have retieved the data from database and stored in list of student and return to controller
+then we make a new StudentController and add the following code here we have called the method of student data class and stored the StudentRepository student and return to view
+

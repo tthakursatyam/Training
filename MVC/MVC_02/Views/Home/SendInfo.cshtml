@@ -1,0 +1,100 @@
+﻿@{
+    ViewData["Title"] = "Student Information";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Information</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            height: 100vh;
+            background: linear-gradient(135deg,#667eea,#764ba2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(12px);
+            padding: 40px;
+            border-radius: 15px;
+            width: 400px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            animation: fadeIn 1s ease;
+        }
+
+        h2 {
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+
+        .info {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            font-size: 18px;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        .btn-home {
+            margin-top: 20px;
+            display: inline-block;
+            text-decoration: none;
+            background: white;
+            color: #764ba2;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+            .btn-home:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <h2>🎓 Student Information</h2>
+
+        <div class="info">
+            <span class="label">Name:</span>
+            @ViewData["Name"]
+        </div>
+
+        <div class="info">
+            <span class="label">College:</span>
+            @ViewData["College"]
+        </div>
+
+        <a href="/" class="btn-home">🏠 Back Home</a>
+    </div>
+
+</body>
+</html>

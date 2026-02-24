@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="MVC001/MVC001.csproj" />
+  <Project Path="MVC_02/MVC_02.csproj" Id="70c99f79-5fd7-477a-b17e-c466d1d9b233" />
+  <Project Path="MVC_With_ADO.NET/MVC_With_ADO.NET.csproj" />
+  <Project Path="MVC_With_ADO.NET_2/MVC_With_ADO.NET_2.csproj" Id="e20735c3-e821-49b4-89dd-62c405fde1bd" />
+  <Project Path="MVC_With_EF/MVC_With_EF.csproj" Id="95204ba6-f50d-4349-84c6-49b045e098bf" />
+</Solution>

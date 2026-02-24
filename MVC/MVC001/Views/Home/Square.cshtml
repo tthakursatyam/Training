@@ -1,0 +1,13 @@
+﻿@model int
+<h2> Square Calculator</h2>
+<p> Number: @Model</p>
+<p> Square: @(Model * Model)</p>
+
+@if(Model % 2 == 0)
+{
+	<p> The number is even.</p>
+}
+else
+{
+	<p> The number is odd.</p>
+}
