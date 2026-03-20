@@ -1,0 +1,17 @@
+29-12-2025 14:16:59 | System.DivideByZeroException | Attempted to divide by zero.
+29-12-2025 14:17:15 | System.DivideByZeroException | Attempted to divide by zero.
+29-12-2025 14:19:02 | System.FormatException | The input string 'as' was not in a correct format.
+29-12-2025 14:19:35 | System.IO.FileNotFoundException | Could not find file 'D:\Study\Cg Training\FirstApp\Account.txt'.
+29-12-2025 14:20:52 | System.FormatException | The input string '12d' was not in a correct format.
+29-12-2025 14:33:37 | System.FormatException | The input string '12d' was not in a correct format.
+29-12-2025 14:33:53 | System.IO.FileNotFoundException | Could not find file 'D:\Study\Cg Training\FirstApp\Account.txt'.
+29-12-2025 14:35:26 | System.FormatException | The input string '2434ffff' was not in a correct format. |    at System.Number.ThrowFormatException[TChar](ReadOnlySpan`1 value)
+   at System.Number.ParseDecimal[TChar](ReadOnlySpan`1 value, NumberStyles styles, NumberFormatInfo info)
+   at System.Convert.ToDecimal(String value)
+   at exc_hand.func1() in D:\Study\Cg Training\FirstApp\Day 8\exception_handling.cs:line 34
+29-12-2025 14:54:18 | System.IO.FileNotFoundException | Could not find file 'D:\Study\Cg Training\FirstApp\data.txt'.
+29-12-2025 14:54:57 | System.IO.FileNotFoundException | Could not find file 'D:\Study\Cg Training\FirstApp\data.txt'.
+29-12-2025 14:55:30 | System.IO.FileNotFoundException | Could not find file 'D:\Study\Cg Training\FirstApp\data.txt'.
+29-12-2025 14:56:12 | System.IO.FileNotFoundException | Could not find file 'D:\Study\Cg Training\FirstApp\data.txt'.
+29-12-2025 20:35:22 | BankingSystem.InsufficientBalanceException | Insufficient Bank Balance
+29-12-2025 20:37:10 | BankingSystem.InsufficientBalanceException | Insufficient Bank Balance

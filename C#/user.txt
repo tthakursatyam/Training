@@ -1,0 +1,4 @@
+123
+This file is created by StreamWriter
+321
+This is an attempt to rewrite the file data
