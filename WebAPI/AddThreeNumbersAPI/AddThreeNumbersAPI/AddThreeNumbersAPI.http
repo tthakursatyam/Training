@@ -1,0 +1,6 @@
+@AddThreeNumbersAPI_HostAddress = http://localhost:5036
+
+GET {{AddThreeNumbersAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
