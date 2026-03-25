@@ -1,0 +1,6 @@
+@Repo_Pattern_With_TwoDB_HostAddress = http://localhost:5188
+
+GET {{Repo_Pattern_With_TwoDB_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
