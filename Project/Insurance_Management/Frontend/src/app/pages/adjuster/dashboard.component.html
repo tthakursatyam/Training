@@ -1,0 +1,71 @@
+<nav class="adj-nav">
+  <div>
+    <h1 class="nav-title">Adjuster Workbench</h1>
+    <p class="nav-sub">Welcome, {{ userName }}</p>
+  </div>
+  <div class="nav-right">
+    <app-notification></app-notification>
+    <button class="btn-logout" (click)="logout()">Log Out</button>
+  </div>
+</nav>
+
+<div class="page-container animated-enter">
+  <div class="stats-grid">
+    <div class="glass-panel stat-panel">
+      <div class="stat-val warning">{{ stats?.assignedClaims ?? 0 }}</div>
+      <div class="sub-text stat-label">In Progress</div>
+    </div>
+    <div class="glass-panel stat-panel">
+      <div class="stat-val success">{{ stats?.approvedClaims ?? 0 }}</div>
+      <div class="sub-text stat-label">Approved</div>
+    </div>
+    <div class="glass-panel stat-panel">
+      <div class="stat-val danger">{{ stats?.rejectedClaims ?? 0 }}</div>
+      <div class="sub-text stat-label">Rejected</div>
+    </div>
+    <div class="glass-panel stat-panel">
+      <div class="stat-val">{{ stats?.pendingInQueue ?? 0 }}</div>
+      <div class="sub-text stat-label">Pending in Queue</div>
+    </div>
+  </div>
+
+  <div class="glass-panel">
+    <h3 class="header-text" style="font-size:1.1rem;margin-bottom:1rem;">Assigned Claims Queue</h3>
+
+    <div *ngIf="claims.length === 0" class="empty-state">
+      <span class="sub-text">No claims assigned. Queue is empty.</span>
+    </div>
+
+    <div *ngIf="claims.length > 0" style="overflow-x:auto;">
+      <table class="claims-table">
+        <thead>
+          <tr>
+            <th>Claim ID</th><th>Policy</th><th>Description</th>
+            <th>Filed On</th><th>Status</th><th>Evidence</th><th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of claims">
+            <td class="fw-600">#{{ c.id }}</td>
+            <td class="sub-text">POL-{{ c.policyId }}</td>
+            <td class="td-clamp">{{ c.description }}</td>
+            <td class="sub-text">{{ c.createdDate | date:'dd MMM yyyy' }}</td>
+            <td><span class="badge badge-warning">{{ c.status }}</span></td>
+            <td>
+              <button class="btn-download" (click)="downloadDocument(c.id)" [disabled]="downloadingId === c.id">
+                <span *ngIf="downloadingId !== c.id">⬇ Download</span>
+                <span *ngIf="downloadingId === c.id">Loading…</span>
+              </button>
+            </td>
+            <td class="text-right">
+              <div class="action-btns">
+                <button class="btn-approve" (click)="actionClaim(c.id, 'Approved')">✓ Approve</button>
+                <button class="btn-reject"  (click)="actionClaim(c.id, 'Rejected')">✕ Reject</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

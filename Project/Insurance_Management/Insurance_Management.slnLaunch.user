@@ -1,0 +1,37 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "AuthService.API\\AuthService.API.csproj",
+        "Action": "Start",
+        "DebugTarget": "http"
+      },
+      {
+        "Path": "ClaimService.API\\ClaimService.API.csproj",
+        "Action": "Start",
+        "DebugTarget": "http"
+      },
+      {
+        "Path": "PolicyService.API\\PolicyService.API.csproj",
+        "Action": "Start",
+        "DebugTarget": "http"
+      },
+      {
+        "Path": "PaymentService.API\\PaymentService.API.csproj",
+        "Action": "Start",
+        "DebugTarget": "http"
+      },
+      {
+        "Path": "NotificationService.API\\NotificationService.API.csproj",
+        "Action": "Start",
+        "DebugTarget": "http"
+      },
+      {
+        "Path": "ApiGateway\\ApiGateway.csproj",
+        "Action": "Start",
+        "DebugTarget": "ApiGateway"
+      }
+    ]
+  }
+]

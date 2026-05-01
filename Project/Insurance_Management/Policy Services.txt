@@ -1,0 +1,508 @@
+Policy Services
+
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using PolicyService.API.DTOs;
+using PolicyService.API.Services;
+using PolicyService.API.Data;
+using Microsoft.EntityFrameworkCore;
+
+namespace PolicyService.API.Controllers
+{
+    [ApiController]
+    [Route("api/policy")]
+    public class PolicyController : ControllerBase
+    {
+        private readonly PolicyServices _service;
+        private readonly PolicyDbContext _context;
+
+        public PolicyController(PolicyServices service, PolicyDbContext context)
+        {
+            _service = service;
+            _context = context;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CreatePolicyRequest dto)
+        {
+            await _service.CreatePolicy(dto);
+            return Ok("Policy Created");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await _service.GetAllPolicies();
+            return Ok(result);
+        }
+
+        [HttpPost("purchase")]
+        [Authorize]
+        public async Task<IActionResult> Purchase(PurchasePolicyRequest dto)
+        {
+            await _service.PurchasePolicy(dto, HttpContext);
+            return Ok("Policy Purchased Successfully");
+        }
+
+        [HttpGet("my-policies")]
+        [Authorize]
+        public async Task<IActionResult> GetMyPolicies()
+        {
+            var result = await _service.GetMyPolicies(HttpContext);
+            return Ok(result);
+        }
+
+        [HttpPost("renew")]
+        [Authorize]
+        public async Task<IActionResult> Renew(RenewPolicyRequest dto)
+        {
+            await _service.RenewPolicy(dto, HttpContext);
+            return Ok(new { message = "Policy renewed successfully" });
+        }
+
+        [HttpPost("confirm-payment")]
+        public async Task<IActionResult> ConfirmPayment(ConfirmPaymentDto dto)
+        {
+            var policy = await _context.Policies.FindAsync(dto.PolicyId);
+
+            if (policy == null)
+                return NotFound();
+
+            if (dto.Status == "Success")
+            {
+                policy.Status = "Active";
+            }
+            else
+            {
+                policy.Status = "PaymentFailed";
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok("Payment status updated in PolicyService");
+        }
+    }
+}
+
+
+using Microsoft.EntityFrameworkCore;
+using PolicyService.API.Entities;
+
+namespace PolicyService.API.Data
+{
+    public class PolicyDbContext : DbContext
+    {
+        public PolicyDbContext(DbContextOptions<PolicyDbContext> options) : base(options)
+        {
+        }
+
+        public DbSet<Policy> Policies { get; set; }
+        public DbSet<CustomerPolicy> CustomerPolicies { get; set; }
+    }
+}
+
+
+
+namespace PolicyService.API.DTOs
+{
+    public class ConfirmPaymentDto
+    {
+        public int PolicyId { get; set; }
+        public int PaymentId { get; set; }
+        public string Status { get; set; }
+    }
+}
+
+using System.ComponentModel.DataAnnotations;
+
+namespace PolicyService.API.DTOs
+{
+    public class ConfirmPaymentRequest
+    {
+        [Required]
+        public int PolicyId { get; set; }
+    }
+}
+
+using System.ComponentModel.DataAnnotations;
+
+namespace PolicyService.API.DTOs
+{
+    public class CreatePolicyRequest
+    {
+        [Required(ErrorMessage = "Name is required")]
+        public string Name { get; set; }
+
+        [Required(ErrorMessage = "Type is required")]
+        public string Type { get; set; }
+
+        [Required(ErrorMessage = "Premium is required")]
+        public decimal Premium { get; set; }
+
+        [Required(ErrorMessage = "Coverage is required")]
+        public string Coverage { get; set; }
+
+        [Required(ErrorMessage = "Terms are required")]
+        public string Terms { get; set; }
+    }
+}
+
+
+namespace PolicyService.API.DTOs
+{
+    public class MyPolicyResponse
+    {
+        public int PolicyId { get; set; }
+        public string PolicyName { get; set; }
+        public string PolicyNumber { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public string Status { get; set; }
+    }
+}
+
+
+using System.ComponentModel.DataAnnotations;
+
+namespace PolicyService.API.DTOs
+{
+    public class PurchasePolicyRequest
+    {
+        [Required(ErrorMessage = "PolicyId is required")]
+        public int PolicyId { get; set; }
+    }
+}
+
+
+using System.ComponentModel.DataAnnotations;
+
+namespace PolicyService.API.DTOs
+{
+    public class RenewPolicyRequest
+    {
+        [Required(ErrorMessage = "CustomerPolicyId is required")]
+        public int CustomerPolicyId { get; set; }
+    }
+}'
+
+
+
+
+
+using System.ComponentModel.DataAnnotations;
+
+namespace PolicyService.API.Entities
+{
+    public class CustomerPolicy
+    {
+        [Key]
+        public int Id { get; set; }
+
+        public Guid UserId { get; set; }
+
+        public int PolicyId { get; set; }
+
+        public string PolicyNumber { get; set; }
+
+        public DateTime StartDate { get; set; }
+
+        public DateTime EndDate { get; set; }
+
+        public string Status { get; set; }
+    }
+}
+
+
+
+using System.ComponentModel.DataAnnotations;
+namespace PolicyService.API.Entities
+{
+    public class Policy
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required(ErrorMessage = "Policy name is required")]
+        public string Name { get; set; }
+
+        [Required(ErrorMessage = "Policy type is required")]
+        public string Type { get; set; }
+
+        [Required(ErrorMessage = "Premium is required")]
+        public decimal Premium { get; set; }
+
+        [Required(ErrorMessage = "Coverage is required")]
+        public string Coverage { get; set; }
+
+        [Required(ErrorMessage = "Terms are required")]
+        public string Terms { get; set; }
+
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public string Status { get; set; }
+    }
+}
+
+
+
+using System.Text;
+using System.Text.Json;
+
+namespace PolicyService.API.ExternalServices
+{
+    public class PaymentClient
+    {
+        private readonly HttpClient _httpClient;
+
+        public PaymentClient(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
+
+        public async Task<string> CreatePayment(int policyId, decimal amount)
+        {
+            var request = new
+            {
+                policyId = policyId,
+                amount = amount
+            };
+
+            var content = new StringContent(
+                JsonSerializer.Serialize(request),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _httpClient.PostAsync(
+                "http://localhost:5002/api/payment/create-order",
+                content);
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception("Payment service failed");
+
+            var result = await response.Content.ReadAsStringAsync();
+            return result;
+        }
+    }
+}
+
+
+using System.Security.Claims;
+
+namespace PolicyService.API.Helpers
+{
+    public static class JwtHelper
+    {
+        public static Guid GetUserId(HttpContext context)
+        {
+            var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return Guid.Parse(userId);
+        }
+    }
+}
+
+using Microsoft.EntityFrameworkCore;
+using PolicyService.API.Data;
+using PolicyService.API.DTOs;
+using PolicyService.API.Entities;
+using PolicyService.API.ExternalServices;
+using PolicyService.API.Helpers;
+
+namespace PolicyService.API.Services
+{
+    public class PolicyServices
+    {
+        private readonly PolicyDbContext _context;
+        private readonly PaymentClient _paymentClient;
+
+        public PolicyServices(PolicyDbContext context, PaymentClient paymentClient)
+        {
+            _context = context;
+            _paymentClient = paymentClient;
+        }
+
+        public async Task CreatePolicy(CreatePolicyRequest dto)
+        {
+            var policy = new Policy
+            {
+                Name = dto.Name,
+                Type = dto.Type,
+                Premium = dto.Premium,
+                Coverage = dto.Coverage,
+                Terms = dto.Terms
+            };
+
+            await _context.Policies.AddAsync(policy);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<Policy>> GetAllPolicies()
+        {
+            return _context.Policies.ToList();
+        }
+        public async Task<object> PurchasePolicy(PurchasePolicyRequest dto, HttpContext context)
+        {
+            var userId = JwtHelper.GetUserId(context);
+
+            var policy = await _context.Policies.FindAsync(dto.PolicyId);
+
+            if (policy == null)
+                throw new Exception("Policy not found");
+
+            // Call Payment Service
+            var paymentResponse = await _paymentClient.CreatePayment(
+                policy.Id,
+                policy.Premium);
+
+            // DO NOT create policy yet
+            return new
+            {
+                message = "Proceed to payment",
+                payment = paymentResponse
+            };
+        }
+        public async Task<List<MyPolicyResponse>> GetMyPolicies(HttpContext context)
+        {
+            var userId = JwtHelper.GetUserId(context);
+
+            var result = await _context.CustomerPolicies
+                .Where(x => x.UserId == userId)
+                .Join(_context.Policies,
+                    cp => cp.PolicyId,
+                    p => p.Id,
+                    (cp, p) => new MyPolicyResponse
+                    {
+                        PolicyId = p.Id,
+                        PolicyName = p.Name,
+                        PolicyNumber = cp.PolicyNumber,
+                        StartDate = cp.StartDate,
+                        EndDate = cp.EndDate,
+                        Status = cp.Status
+                    })
+                .ToListAsync();
+
+            return result;
+        }
+        public async Task RenewPolicy(RenewPolicyRequest dto, HttpContext context)
+        {
+            var userId = JwtHelper.GetUserId(context);
+
+            var policy = await _context.CustomerPolicies
+                .FirstOrDefaultAsync(x => x.Id == dto.CustomerPolicyId);
+
+            if (policy == null)
+                throw new Exception("Policy not found");
+
+            if (policy.UserId != userId)
+                throw new Exception("Unauthorized access");
+
+            if (policy.Status != "Active")
+                throw new Exception("Only active policies can be renewed");
+
+            policy.EndDate = policy.EndDate.AddYears(1);
+
+            await _context.SaveChangesAsync();
+        }
+        public async Task ConfirmPayment(ConfirmPaymentRequest dto, HttpContext context)
+        {
+            var userId = JwtHelper.GetUserId(context);
+
+            var policy = await _context.Policies.FindAsync(dto.PolicyId);
+
+            if (policy == null)
+                throw new Exception("Policy not found");
+
+            var customerPolicy = new CustomerPolicy
+            {
+                UserId = userId,
+                PolicyId = policy.Id,
+                PolicyNumber = "POL" + DateTime.UtcNow.Ticks,
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow.AddYears(1),
+                Status = "Active"
+            };
+
+            await _context.CustomerPolicies.AddAsync(customerPolicy);
+            await _context.SaveChangesAsync();
+        }
+    }
+}
+
+
+//Program.cs
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+using PolicyService.API.Data;
+using PolicyService.API.ExternalServices;
+using PolicyService.API.Services;
+using System.Text;
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+builder.Services.AddControllers();
+
+builder.Services.AddHttpClient();
+
+builder.Services.AddScoped<PolicyServices>();
+builder.Services.AddScoped<PaymentClient>();
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter: Bearer {your JWT token}"
+    });
+
+    options.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
+    {
+        { new OpenApiSecuritySchemeReference("Bearer", doc), new List<string>() }
+    });
+});
+
+//Database Connection
+builder.Services.AddDbContext<PolicyDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Policy_Db_Connection")));
+
+//JWT Authentication
+builder.Services.AddAuthentication("Bearer")
+.AddJwtBearer("Bearer", options =>
+{
+    var key = Encoding.UTF8.GetBytes("THIS_IS_MY_SUPER_SECRET_KEY_123456");
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = "InsuranceAuthServer",
+        ValidAudience = "InsuranceClient",
+        IssuerSigningKey = new SymmetricSecurityKey(key)
+    };
+});
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddOpenApi();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+}
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();

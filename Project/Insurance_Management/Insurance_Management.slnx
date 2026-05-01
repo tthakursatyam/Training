@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="ApiGateway/ApiGateway.csproj" Id="bc336b48-5e87-4997-9d15-8498dcc078d6" />
+  <Project Path="AuthService.API/AuthService.API.csproj" Id="f23385a3-39ae-461d-8fc4-768099752927" />
+  <Project Path="ClaimService.API/ClaimService.API.csproj" Id="b30b43bf-74ad-4766-9946-abd050439072" />
+  <Project Path="NotificationService.API/NotificationService.API.csproj" Id="d0d91e97-612e-4728-8a6a-cb935c80edcb" />
+  <Project Path="PaymentService.API/PaymentService.API.csproj" Id="50d1c30e-2022-4427-bc85-3c4316ff7de2" />
+  <Project Path="PolicyService.API/PolicyService.API.csproj" Id="61be80e7-bcfa-4bab-836c-1a31a727a2d2" />
+</Solution>

@@ -1,0 +1,333 @@
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <h2>⚙️ Admin Panel</h2>
+    <p>{{ userName }}</p>
+  </div>
+  <div class="nav-section">Overview</div>
+  <div class="nav-item" [class.active]="tab==='overview'" (click)="tab='overview'"><span class="nav-icon">📊</span> Dashboard</div>
+  <div class="nav-section">Management</div>
+  <div class="nav-item" [class.active]="tab==='users'" (click)="tab='users'">
+    <span class="nav-icon">👥</span> Customers
+    <span *ngIf="users.length" class="nav-badge nav-badge-indigo">{{users.length}}</span>
+  </div>
+  <div class="nav-item" [class.active]="tab==='staff'" (click)="tab='staff'"><span class="nav-icon">🧑‍💼</span> Staff</div>
+  <div class="nav-item" [class.active]="tab==='policies'" (click)="tab='policies'">
+    <span class="nav-icon">📋</span> Policies
+    <span *ngIf="allPolicies.length" class="nav-badge nav-badge-indigo">{{allPolicies.length}}</span>
+  </div>
+  <div class="nav-item" [class.active]="tab==='tickets'" (click)="tab='tickets'">
+    <span class="nav-icon">🎫</span> Tickets
+    <span *ngIf="pendingTickets" class="nav-badge nav-badge-amber">{{pendingTickets}}</span>
+  </div>
+  <div class="nav-section">Insights</div>
+  <div class="nav-item" [class.active]="tab==='analytics'" (click)="tab='analytics'"><span class="nav-icon">📈</span> Analytics</div>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="avatar" style="background:#6366F1;">{{userName.charAt(0).toUpperCase()}}</div>
+      <div>
+        <div class="sidebar-user-name">{{userName}}</div>
+        <div class="sidebar-user-role">Administrator</div>
+      </div>
+    </div>
+    <button class="logout-btn" (click)="logout()">🚪 Sign Out</button>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">{{tabTitles[tab]}}</div>
+      <div class="topbar-sub">{{tabSubs[tab]}}</div>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-date">{{today | date:'EEEE, d MMM yyyy'}}</span>
+      <app-notification></app-notification>
+    </div>
+  </div>
+
+  <div class="content animated-enter">
+
+    <!-- OVERVIEW -->
+    <div *ngIf="tab==='overview'">
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-icon" style="background:#EEF2FF;">👥</div><div><div class="kpi-val" style="color:#6366F1;">{{userStats?.totalUsers ?? 0}}</div><div class="kpi-lbl">Total Customers</div></div></div>
+        <div class="kpi-card"><div class="kpi-icon" style="background:#DCFCE7;">💰</div><div><div class="kpi-val" style="color:#16A34A;">₹{{policyStats?.totalRevenue ?? 0 | number:'1.0-0'}}</div><div class="kpi-lbl">Total Revenue</div></div></div>
+        <div class="kpi-card"><div class="kpi-icon" style="background:#FEF9C3;">📋</div><div><div class="kpi-val" style="color:#CA8A04;">{{policyStats?.totalPurchasedPolicies ?? 0}}</div><div class="kpi-lbl">Policies Sold</div></div></div>
+        <div class="kpi-card"><div class="kpi-icon" style="background:#FEE2E2;">🎫</div><div><div class="kpi-val" style="color:#DC2626;">{{claimStats?.pendingClaims ?? 0}}</div><div class="kpi-lbl">Pending Claims</div></div></div>
+        <div class="kpi-card"><div class="kpi-icon" style="background:#DBEAFE;">💬</div><div><div class="kpi-val" style="color:#2563EB;">{{claimStats?.pendingQueries ?? 0}}</div><div class="kpi-lbl">Open Queries</div></div></div>
+        <div class="kpi-card"><div class="kpi-icon" style="background:#F3E8FF;">✅</div><div><div class="kpi-val" style="color:#9333EA;">{{claimStats?.approvedClaims ?? 0}}</div><div class="kpi-lbl">Approved Claims</div></div></div>
+      </div>
+      <div class="two-col" style="margin-bottom:1.5rem;">
+        <div class="card">
+          <div class="card-header"><span class="card-title">👨‍💼 Staff Overview</span><button class="btn-sm" (click)="tab='staff'">Manage →</button></div>
+          <div class="card-body col-gap">
+            <div class="row-between border-b"><span class="text-sm text-muted">Customer Agents</span><span class="tag tag-blue">{{agents.length}}</span></div>
+            <div class="row-between border-b"><span class="text-sm text-muted">Claim Adjusters</span><span class="tag tag-purple">{{adjusters.length}}</span></div>
+            <div class="row-between"><span class="text-sm text-muted">Active Customers</span><span class="tag tag-green">{{userStats?.activeUsers ?? 0}}</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">⚡ System Health</span></div>
+          <div class="card-body col-gap">
+            <div>
+              <div class="row-between text-sm mb-1"><span class="text-muted">Claims Resolution</span><span class="fw-600 text-amber">{{getPercentage(claimStats?.pendingClaims, claimStats?.totalClaims)|number:'1.0-0'}}% pending</span></div>
+              <div class="progress-wrap"><div class="progress-bar" [style.width.%]="getPercentage(claimStats?.pendingClaims, claimStats?.totalClaims)" style="background:#F59E0B;"></div></div>
+            </div>
+            <div>
+              <div class="row-between text-sm mb-1"><span class="text-muted">Query Clearance</span><span class="fw-600 text-green">{{getPercentage(claimStats?.resolvedQueries, claimStats?.totalQueries)|number:'1.0-0'}}% resolved</span></div>
+              <div class="progress-wrap"><div class="progress-bar" [style.width.%]="getPercentage(claimStats?.resolvedQueries, claimStats?.totalQueries)" style="background:#10B981;"></div></div>
+            </div>
+            <div>
+              <div class="row-between text-sm mb-1"><span class="text-muted">Policy Activation</span><span class="fw-600 text-indigo">{{getPercentage(policyStats?.activePolicies, policyStats?.totalPurchasedPolicies)|number:'1.0-0'}}% active</span></div>
+              <div class="progress-wrap"><div class="progress-bar" [style.width.%]="getPercentage(policyStats?.activePolicies, policyStats?.totalPurchasedPolicies)" style="background:#6366F1;"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">🕐 Recent Claims</span><button class="btn-sm" (click)="tab='tickets'">View All →</button></div>
+        <table class="data-table">
+          <thead><tr><th>#</th><th>Customer</th><th>Description</th><th>Status</th><th>Adjuster</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let c of allClaims.slice(0,5)">
+              <td class="fw-600 text-indigo">#{{c.id}}</td>
+              <td><button class="btn-sm" (click)="showCustomerPopup(c.userId, c.createdDate)">{{getCustomerName(c.userId)}}</button></td>
+              <td class="td-truncate text-muted">{{c.description}}</td>
+              <td><span class="tag" [ngClass]="statusTag(c.status)">{{c.status}}</span></td>
+              <td class="text-muted">{{getAdjusterName(c.assignedAdjusterId)}}</td>
+            </tr>
+            <tr *ngIf="allClaims.length===0"><td colspan="5" class="empty-cell">No claims yet</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CUSTOMERS -->
+    <div *ngIf="tab==='users'">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Registered Customers ({{filteredUsers.length}})</span><input class="search-input" [(ngModel)]="userSearch" placeholder="🔍  Search by name or email…"></div>
+        <table class="data-table">
+          <thead><tr><th>Customer</th><th>Email</th><th>Status</th><th class="text-right">Action</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let u of filteredUsers">
+              <td><div class="flex-row gap-3"><div class="avatar" [style.background]="avatarColor(u.name)">{{u.name?.charAt(0)?.toUpperCase()}}</div><span class="fw-500">{{u.name}}</span></div></td>
+              <td class="text-muted">{{u.email}}</td>
+              <td><span class="tag" [ngClass]="u.isActive ? 'tag-green' : 'tag-red'">{{u.isActive ? 'Active' : 'Disabled'}}</span></td>
+              <td class="text-right"><button class="btn-sm" [ngClass]="u.isActive ? 'btn-danger-sm' : 'btn-success-sm'" (click)="toggleUser(u.id)">{{u.isActive ? '🔒 Disable' : '🔓 Enable'}}</button></td>
+            </tr>
+            <tr *ngIf="filteredUsers.length===0"><td colspan="4" class="empty-cell">No customers found</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STAFF -->
+    <div *ngIf="tab==='staff'">
+      <div class="card mb-6">
+        <div class="card-header"><span class="card-title">➕ Add New Staff Member</span></div>
+        <div class="card-body">
+          <form (ngSubmit)="createStaff()">
+            <div class="form-row">
+              <div class="form-field"><label>Role</label><select [(ngModel)]="newStaff.role" name="staffRole"><option value="Agent">Customer Agent</option><option value="ClaimAdjuster">Claim Adjuster</option></select></div>
+              <div class="form-field"><label>Full Name</label><input type="text" [(ngModel)]="newStaff.name" name="staffName" placeholder="e.g. John Smith" required></div>
+              <div class="form-field"><label>Email Address</label><input type="email" [(ngModel)]="newStaff.email" name="staffEmail" placeholder="john@company.com" required></div>
+              <div class="form-field"><label>Temporary Password</label><input type="password" [(ngModel)]="newStaff.password" name="staffPwd" placeholder="Min 8 characters" required></div>
+            </div>
+            <button class="btn-indigo" type="submit">Create Staff Account</button>
+          </form>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><span class="card-title">🧑‍💼 Customer Agents ({{agents.length}})</span></div>
+          <div class="card-body col-gap">
+            <div *ngFor="let a of agents" class="staff-card">
+              <div class="avatar" [style.background]="avatarColor(a.name)">{{a.name?.charAt(0)?.toUpperCase()}}</div>
+              <div style="flex:1;">
+                <div class="fw-600 text-sm">{{a.name}}</div>
+                <div class="text-xs text-muted">{{a.email}}</div>
+              </div>
+              <span class="tag" [ngClass]="a.isActive ? 'tag-green' : 'tag-red'" style="margin-right:0.5rem;">
+                {{a.isActive ? 'Active' : 'Inactive'}}
+              </span>
+              <button class="btn-sm" [ngClass]="a.isActive ? 'btn-danger-sm' : 'btn-success-sm'" (click)="toggleStaff(a.id)">
+                {{a.isActive ? '🔒 Disable' : '🔓 Enable'}}
+              </button>
+            </div>
+            <div *ngIf="agents.length===0" class="empty-cell">No agents yet</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">🔍 Claim Adjusters ({{adjusters.length}})</span></div>
+          <div class="card-body col-gap">
+            <div *ngFor="let c of adjusters" class="staff-card">
+              <div class="avatar" [style.background]="avatarColor(c.name)">{{c.name?.charAt(0)?.toUpperCase()}}</div>
+              <div style="flex:1;">
+                <div class="fw-600 text-sm">{{c.name}}</div>
+                <div class="text-xs text-muted">{{c.email}}</div>
+              </div>
+              <span class="tag" [ngClass]="c.isActive ? 'tag-green' : 'tag-red'" style="margin-right:0.5rem;">
+                {{c.isActive ? 'Active' : 'Inactive'}}
+              </span>
+              <button class="btn-sm" [ngClass]="c.isActive ? 'btn-danger-sm' : 'btn-success-sm'" (click)="toggleStaff(c.id)">
+                {{c.isActive ? '🔒 Disable' : '🔓 Enable'}}
+              </button>
+            </div>
+            <div *ngIf="adjusters.length===0" class="empty-cell">No adjusters yet</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- POLICIES -->
+    <div *ngIf="tab==='policies'">
+      <div style="display:grid;grid-template-columns:1fr 380px;gap:1.25rem;align-items:start;">
+        <!-- Table -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Insurance Products ({{allPolicies.length}})</span>
+            <input class="search-input" [(ngModel)]="policySearch" placeholder="🔍  Search policies…">
+          </div>
+          <table class="data-table">
+            <thead><tr><th>Name</th><th>Type</th><th>Premium</th><th>Coverage</th><th style="text-align:right;">Actions</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let p of filteredPolicies">
+                <td class="fw-600">{{p.name}}</td>
+                <td><span class="tag tag-blue">{{p.type}}</span></td>
+                <td class="fw-600 text-green">₹{{p.premium}}<span class="text-xs text-muted">/mo</span></td>
+                <td class="td-truncate text-muted">{{p.coverage}}</td>
+                <td style="text-align:right;">
+                  <div style="display:flex;justify-content:flex-end;gap:0.4rem;">
+                    <button class="btn-sm" style="color:#6366F1;border-color:#C7D2FE;" (click)="startEditPolicy(p)">✏️ Edit</button>
+                    <button class="btn-sm btn-danger-sm" (click)="confirmDeletePolicy(p)">🗑 Delete</button>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="filteredPolicies.length===0"><td colspan="5" class="empty-cell">No policies found</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Create / Edit form -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">{{editingPolicy ? '✏️ Edit Policy' : '➕ New Policy'}}</span>
+            <button *ngIf="editingPolicy" class="btn-sm" (click)="cancelEditPolicy()">✕ Cancel</button>
+          </div>
+          <div class="card-body">
+            <!-- CREATE form -->
+            <form *ngIf="!editingPolicy" (ngSubmit)="createPolicy()" class="col-gap">
+              <div class="form-field"><label>Policy Name</label><input type="text" [(ngModel)]="newPolicy.name" name="pName" placeholder="e.g. Health Basic" required></div>
+              <div class="form-field"><label>Type</label><input type="text" [(ngModel)]="newPolicy.type" name="pType" placeholder="e.g. Health, Auto" required></div>
+              <div class="form-field"><label>Monthly Premium (₹)</label><input type="number" [(ngModel)]="newPolicy.premium" name="pPremium" placeholder="5000" required></div>
+              <div class="form-field"><label>Coverage Details</label><input type="text" [(ngModel)]="newPolicy.coverage" name="pCoverage" placeholder="e.g. Up to ₹5 Lakhs" required></div>
+              <div class="form-field"><label>Terms & Conditions</label><textarea [(ngModel)]="newPolicy.terms" name="pTerms" rows="3" placeholder="Policy terms…" required></textarea></div>
+              <button class="btn-indigo" type="submit">Publish Policy</button>
+            </form>
+            <!-- EDIT form -->
+            <div *ngIf="editingPolicy" class="col-gap">
+              <div class="form-field"><label>Policy Name</label><input type="text" [(ngModel)]="editingPolicy.name" name="eName"></div>
+              <div class="form-field"><label>Type</label><input type="text" [(ngModel)]="editingPolicy.type" name="eType"></div>
+              <div class="form-field"><label>Monthly Premium (₹)</label><input type="number" [(ngModel)]="editingPolicy.premium" name="ePremium"></div>
+              <div class="form-field"><label>Coverage Details</label><input type="text" [(ngModel)]="editingPolicy.coverage" name="eCoverage"></div>
+              <div class="form-field"><label>Terms & Conditions</label><textarea [(ngModel)]="editingPolicy.terms" name="eTerms" rows="3"></textarea></div>
+              <div style="display:flex;gap:0.5rem;">
+                <button class="btn-indigo" style="flex:1;" (click)="saveEditPolicy()">💾 Save Changes</button>
+                <button class="btn-sm" style="flex:1;" (click)="cancelEditPolicy()">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TICKETS -->
+    <div *ngIf="tab==='tickets'">
+      <div class="subtab-row">
+        <button class="subtab-btn" [class.active]="ticketTab==='claims'" (click)="ticketTab='claims'">📝 Claims ({{allClaims.length}})</button>
+        <button class="subtab-btn" [class.active]="ticketTab==='queries'" (click)="ticketTab='queries'">💬 Queries ({{allQueries.length}})</button>
+      </div>
+      <div *ngIf="ticketTab==='claims'" class="card">
+        <div class="card-header"><span class="card-title">Claim Tickets</span><input class="search-input" [(ngModel)]="claimSearch" placeholder="🔍  Search claims…"></div>
+        <table class="data-table">
+          <thead><tr><th>#</th><th>Customer</th><th>Description</th><th>Filed On</th><th>Status</th><th>Adjuster</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let c of filteredClaims">
+              <td class="fw-700 text-indigo">#{{c.id}}</td>
+              <td><button class="btn-sm" (click)="showCustomerPopup(c.userId, c.createdDate)">{{getCustomerName(c.userId)}}</button></td>
+              <td class="td-truncate text-muted">{{c.description}}</td>
+              <td class="text-muted text-sm">{{c.createdDate | date:'dd MMM yy'}}</td>
+              <td><span class="tag" [ngClass]="statusTag(c.status)">{{c.status}}</span></td>
+              <td class="text-muted">{{getAdjusterName(c.assignedAdjusterId)}}</td>
+            </tr>
+            <tr *ngIf="filteredClaims.length===0"><td colspan="6" class="empty-cell">No claims found</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="ticketTab==='queries'" class="card">
+        <div class="card-header"><span class="card-title">Support Queries</span><input class="search-input" [(ngModel)]="querySearch" placeholder="🔍  Search queries…"></div>
+        <table class="data-table">
+          <thead><tr><th>#</th><th>Customer</th><th>Title</th><th>Filed On</th><th>Status</th><th>Agent</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let q of filteredQueries">
+              <td class="fw-700 text-indigo">#{{q.id}}</td>
+              <td><button class="btn-sm" (click)="showCustomerPopup(q.customerId, q.createdDate)">{{getCustomerName(q.customerId)}}</button></td>
+              <td class="fw-500">{{q.title}}</td>
+              <td class="text-muted text-sm">{{q.createdDate | date:'dd MMM yy'}}</td>
+              <td><span class="tag" [ngClass]="statusTag(q.status)">{{q.status}}</span></td>
+              <td class="text-muted">{{getAgentName(q.agentId)}}</td>
+            </tr>
+            <tr *ngIf="filteredQueries.length===0"><td colspan="6" class="empty-cell">No queries found</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div *ngIf="tab==='analytics'">
+      <div class="kpi-grid mb-6">
+        <div class="kpi-card"><div class="kpi-icon" style="background:#EEF2FF;">👥</div><div><div class="kpi-val" style="color:#6366F1;">{{userStats?.totalUsers??0}}</div><div class="kpi-lbl">Customers</div></div></div>
+        <div class="kpi-card"><div class="kpi-icon" style="background:#DCFCE7;">💰</div><div><div class="kpi-val" style="color:#16A34A;">₹{{policyStats?.totalRevenue??0|number:'1.0-0'}}</div><div class="kpi-lbl">Revenue</div></div></div>
+        <div class="kpi-card"><div class="kpi-icon" style="background:#FEF9C3;">📋</div><div><div class="kpi-val" style="color:#CA8A04;">{{claimStats?.totalClaims??0}}</div><div class="kpi-lbl">Total Claims</div></div></div>
+        <div class="kpi-card"><div class="kpi-icon" style="background:#F3E8FF;">✅</div><div><div class="kpi-val" style="color:#9333EA;">{{claimStats?.approvedClaims??0}}</div><div class="kpi-lbl">Approved</div></div></div>
+        <div class="kpi-card"><div class="kpi-icon" style="background:#FEE2E2;">❌</div><div><div class="kpi-val" style="color:#DC2626;">{{claimStats?.rejectedClaims??0}}</div><div class="kpi-lbl">Rejected</div></div></div>
+        <div class="kpi-card"><div class="kpi-icon" style="background:#DBEAFE;">💬</div><div><div class="kpi-val" style="color:#2563EB;">{{claimStats?.resolvedQueries??0}}</div><div class="kpi-lbl">Resolved Queries</div></div></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><span class="card-title">📊 Claims Breakdown</span></div>
+          <div class="card-body col-gap">
+            <div><div class="row-between text-sm mb-1"><span class="text-muted">Approved</span><span class="fw-600 text-green">{{getPercentage(claimStats?.approvedClaims,claimStats?.totalClaims)|number:'1.0-0'}}%</span></div><div class="progress-wrap"><div class="progress-bar" [style.width.%]="getPercentage(claimStats?.approvedClaims,claimStats?.totalClaims)" style="background:#10B981;"></div></div></div>
+            <div><div class="row-between text-sm mb-1"><span class="text-muted">Rejected</span><span class="fw-600 text-red">{{getPercentage(claimStats?.rejectedClaims,claimStats?.totalClaims)|number:'1.0-0'}}%</span></div><div class="progress-wrap"><div class="progress-bar" [style.width.%]="getPercentage(claimStats?.rejectedClaims,claimStats?.totalClaims)" style="background:#EF4444;"></div></div></div>
+            <div><div class="row-between text-sm mb-1"><span class="text-muted">Pending</span><span class="fw-600 text-amber">{{getPercentage(claimStats?.pendingClaims,claimStats?.totalClaims)|number:'1.0-0'}}%</span></div><div class="progress-wrap"><div class="progress-bar" [style.width.%]="getPercentage(claimStats?.pendingClaims,claimStats?.totalClaims)" style="background:#F59E0B;"></div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">💬 Query Resolution</span></div>
+          <div class="card-body col-gap">
+            <div><div class="row-between text-sm mb-1"><span class="text-muted">Resolved</span><span class="fw-600 text-green">{{getPercentage(claimStats?.resolvedQueries,claimStats?.totalQueries)|number:'1.0-0'}}%</span></div><div class="progress-wrap"><div class="progress-bar" [style.width.%]="getPercentage(claimStats?.resolvedQueries,claimStats?.totalQueries)" style="background:#10B981;"></div></div></div>
+            <div><div class="row-between text-sm mb-1"><span class="text-muted">Pending / Open</span><span class="fw-600 text-amber">{{getPercentage(claimStats?.pendingQueries,claimStats?.totalQueries)|number:'1.0-0'}}%</span></div><div class="progress-wrap"><div class="progress-bar" [style.width.%]="getPercentage(claimStats?.pendingQueries,claimStats?.totalQueries)" style="background:#F59E0B;"></div></div></div>
+            <div class="row-between border-t pt-2"><span class="text-sm text-muted">Total Queries</span><span class="fw-700">{{claimStats?.totalQueries??0}}</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CUSTOMER POPUP -->
+<div *ngIf="selectedCustomer" class="modal-overlay" (click)="selectedCustomer=null">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="selectedCustomer=null">✕</button>
+    <div class="modal-avatar-wrap">
+      <div class="avatar avatar-lg" [style.background]="avatarColor(selectedCustomer.name)">{{selectedCustomer.name?.charAt(0)?.toUpperCase()}}</div>
+      <div class="modal-name">{{selectedCustomer.name}}</div>
+      <div class="modal-role">Customer</div>
+    </div>
+    <div class="col-gap">
+      <div class="row-between border-b pb-2 text-sm"><span class="text-muted fw-500">Email</span><span class="fw-600">{{selectedCustomer.email}}</span></div>
+      <div class="row-between text-sm"><span class="text-muted fw-500">Ticket Filed</span><span class="fw-600">{{selectedCustomer.ticketDate | date:'dd MMM yyyy, h:mm a'}}</span></div>
+    </div>
+  </div>
+</div>

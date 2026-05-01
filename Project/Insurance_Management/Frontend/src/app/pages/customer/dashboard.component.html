@@ -1,0 +1,233 @@
+<nav style="background:white;padding:.875rem 2rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;">
+      <div style="display:flex;align-items:center;gap:.75rem;">
+        <span style="font-size:1.4rem;">🛡️</span>
+        <span class="header-text" style="font-size:1.25rem;margin:0;">InsurancePortal</span>
+      </div>
+      <div style="display:flex;gap:.25rem;background:#F3F4F6;padding:.25rem;border-radius:10px;">
+        <button class="nav-tab" [class.active]="activeSection==='dashboard'" (click)="activeSection='dashboard'">📊 Dashboard</button>
+        <button class="nav-tab" [class.active]="activeSection==='tickets'" (click)="activeSection='tickets'">
+          🎫 My Tickets
+          <span *ngIf="openTicketsCount>0" style="background:#EF4444;color:white;border-radius:999px;font-size:.65rem;padding:.1rem .4rem;margin-left:.2rem;">{{openTicketsCount}}</span>
+        </button>
+        <button class="nav-tab" [class.active]="activeSection==='browse'" (click)="loadPlans();activeSection='browse'">🏪 Browse Plans</button>
+      </div>
+      <div style="display:flex;gap:.75rem;align-items:center;">
+        <app-notification></app-notification>
+        <button class="btn-secondary" style="padding:.5rem 1rem;font-size:.875rem;" (click)="logout()">Log Out</button>
+      </div>
+    </nav>
+
+    <div class="page-container animated-enter" style="max-width:1280px;">
+
+      <!-- DASHBOARD -->
+      <div *ngIf="activeSection==='dashboard'">
+        <div style="margin-bottom:2rem;">
+          <h2 class="header-text" style="font-size:1.6rem;">Welcome back, {{userName}} 👋</h2>
+          <p class="sub-text">Here's a snapshot of your insurance portfolio.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-bottom:2rem;">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#EEF2FF;">📋</div>
+            <div><div class="stat-value" style="color:var(--primary);">{{policies.length}}</div><div class="stat-label">Active Policies</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#D1FAE5;">✅</div>
+            <div><div class="stat-value" style="color:var(--secondary);">{{approvedClaims}}</div><div class="stat-label">Approved Claims</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#FEF3C7;">⏳</div>
+            <div><div class="stat-value" style="color:var(--warning);">{{pendingClaims}}</div><div class="stat-label">Pending Claims</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#F3F4F6;">💬</div>
+            <div><div class="stat-value" style="color:var(--text-main);">{{openQueries}}</div><div class="stat-label">Open Queries</div></div>
+          </div>
+        </div>
+
+        <div class="glass-panel" style="margin-bottom:1.5rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+            <h3 class="header-text" style="font-size:1.1rem;margin:0;">My Policies</h3>
+            <button class="btn-primary" style="padding:.5rem 1rem;font-size:.8rem;" (click)="loadPlans();activeSection='browse'">+ Browse Plans</button>
+          </div>
+          <div *ngIf="policies.length===0" style="text-align:center;padding:2rem 0;" class="sub-text">No active policies yet. Browse plans to get started.</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;">
+            <div *ngFor="let p of policies" class="policy-card">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem;">
+                <div>
+                  <div style="font-weight:600;font-size:.95rem;">{{p.policyName}}</div>
+                  <div style="font-size:.75rem;color:var(--text-muted);margin-top:.2rem;">{{p.policyNumber}}</div>
+                </div>
+                <span class="badge badge-success">{{p.status}}</span>
+              </div>
+              <div style="font-size:.8rem;color:var(--text-muted);margin-bottom:.75rem;">
+                <div>📅 Start: {{p.startDate | date:'dd MMM yyyy'}}</div>
+                <div>📅 End: &nbsp;&nbsp;{{p.endDate | date:'dd MMM yyyy'}}</div>
+              </div>
+              <button class="btn-secondary" style="width:100%;font-size:.8rem;padding:.5rem;" (click)="downloadPolicy(p.id)" [disabled]="downloadingPolicyId===p.id">
+                {{downloadingPolicyId===p.id ? 'Downloading…' : '⬇ Download PDF'}}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div class="glass-panel" style="padding:1.25rem;cursor:pointer;" (click)="activeSection='tickets';ticketTab='claims';showClaimForm=true">
+            <div style="font-size:1.5rem;margin-bottom:.5rem;">📝</div>
+            <div style="font-weight:600;margin-bottom:.25rem;">File a Claim</div>
+            <div class="sub-text" style="font-size:.8rem;">Submit a new insurance claim with evidence</div>
+          </div>
+          <div class="glass-panel" style="padding:1.25rem;cursor:pointer;" (click)="activeSection='tickets';ticketTab='queries';showQueryForm=true">
+            <div style="font-size:1.5rem;margin-bottom:.5rem;">💬</div>
+            <div style="font-weight:600;margin-bottom:.25rem;">Ask a Question</div>
+            <div class="sub-text" style="font-size:.8rem;">Raise a support query with our team</div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- TICKETS -->
+      <div *ngIf="activeSection==='tickets'">
+        <div style="margin-bottom:1.5rem;">
+          <h2 class="header-text" style="font-size:1.6rem;">My Tickets</h2>
+          <p class="sub-text">Manage your claims and support queries in one place.</p>
+        </div>
+        <div style="display:flex;gap:.5rem;margin-bottom:1.5rem;">
+          <button class="ticket-tab-btn" [class.active]="ticketTab==='claims'" (click)="ticketTab='claims'">📝 Claims ({{claims.length}})</button>
+          <button class="ticket-tab-btn" [class.active]="ticketTab==='queries'" (click)="ticketTab='queries'">💬 Support Queries ({{queries.length}})</button>
+        </div>
+
+        <!-- Claims -->
+        <div *ngIf="ticketTab==='claims'">
+          <div class="glass-panel">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+              <h3 class="header-text" style="font-size:1.05rem;margin:0;">Claims History</h3>
+              <button *ngIf="!showClaimForm" class="btn-primary" style="padding:.5rem 1rem;font-size:.8rem;" (click)="showClaimForm=true">+ New Claim</button>
+            </div>
+            <div *ngIf="showClaimForm" class="form-modal" style="margin-bottom:1.5rem;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                <strong style="font-size:.95rem;">File a New Claim</strong>
+                <button class="btn-secondary" style="padding:.25rem .6rem;font-size:.75rem;" (click)="showClaimForm=false">✕ Cancel</button>
+              </div>
+              <form (ngSubmit)="submitClaim()">
+                <div style="margin-bottom:.75rem;">
+                  <label class="form-label">Select Policy</label>
+                  <select class="form-control" [(ngModel)]="newClaim.policyId" name="claimPolicyId" required>
+                    <option value="" disabled>-- Choose a policy --</option>
+                    <option *ngFor="let p of policies" [value]="p.policyId">{{p.policyNumber}} — {{p.policyName}}</option>
+                  </select>
+                </div>
+                <div style="margin-bottom:.75rem;">
+                  <label class="form-label">Description of Event</label>
+                  <textarea class="form-control" [(ngModel)]="newClaim.description" name="claimDesc" rows="3" placeholder="Describe what happened…" required></textarea>
+                </div>
+                <div style="margin-bottom:1rem;">
+                  <label class="form-label">Evidence / Document</label>
+                  <input type="file" class="form-control" (change)="onFileSelected($event)" required>
+                  <div *ngIf="selectedClaimFile" style="font-size:.75rem;color:var(--secondary);margin-top:.3rem;">✓ {{selectedClaimFile.name}}</div>
+                </div>
+                <div style="display:flex;gap:.5rem;">
+                  <button type="submit" class="btn-primary" style="flex:1;" [disabled]="submittingClaim">{{submittingClaim ? 'Submitting…' : 'Submit Claim'}}</button>
+                  <button type="button" class="btn-secondary" style="flex:1;" (click)="showClaimForm=false">Cancel</button>
+                </div>
+              </form>
+            </div>
+            <div *ngIf="claims.length===0 && !showClaimForm" style="text-align:center;padding:2rem 0;" class="sub-text">No claims submitted yet.</div>
+            <div *ngFor="let c of claims" class="history-item">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div>
+                  <div style="font-weight:600;font-size:.9rem;">Claim #{{c.id}} — Policy #{{c.policyId}}</div>
+                  <div style="font-size:.8rem;color:var(--text-muted);margin-top:.2rem;">{{c.createdDate | date:'dd MMM yyyy, h:mm a'}}</div>
+                </div>
+                <span class="badge" [ngClass]="{'badge-warning':c.status==='Pending'||c.status==='Assigned','badge-success':c.status==='Approved','badge-rejected':c.status==='Rejected'}">{{c.status}}</span>
+              </div>
+              <p style="font-size:.85rem;color:var(--text-muted);margin-top:.5rem;margin-bottom:0;">{{c.description}}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Queries -->
+        <div *ngIf="ticketTab==='queries'">
+          <div class="glass-panel">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+              <h3 class="header-text" style="font-size:1.05rem;margin:0;">Support Queries</h3>
+              <button *ngIf="!showQueryForm" class="btn-primary" style="padding:.5rem 1rem;font-size:.8rem;" (click)="showQueryForm=true">+ New Query</button>
+            </div>
+            <div *ngIf="showQueryForm" class="form-modal" style="margin-bottom:1.5rem;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                <strong style="font-size:.95rem;">Raise a Support Query</strong>
+                <button class="btn-secondary" style="padding:.25rem .6rem;font-size:.75rem;" (click)="showQueryForm=false">✕ Cancel</button>
+              </div>
+              <form (ngSubmit)="submitQuery()">
+                <div style="margin-bottom:.75rem;">
+                  <label class="form-label">Title</label>
+                  <input type="text" class="form-control" [(ngModel)]="newQuery.title" name="queryTitle" placeholder="Brief summary of your issue" required>
+                </div>
+                <div style="margin-bottom:1rem;">
+                  <label class="form-label">Description</label>
+                  <textarea class="form-control" [(ngModel)]="newQuery.description" name="queryDesc" rows="3" placeholder="Describe your question in detail…" required></textarea>
+                </div>
+                <div style="display:flex;gap:.5rem;">
+                  <button type="submit" class="btn-primary" style="flex:1;">Submit Query</button>
+                  <button type="button" class="btn-secondary" style="flex:1;" (click)="showQueryForm=false">Cancel</button>
+                </div>
+              </form>
+            </div>
+            <div *ngIf="queries.length===0 && !showQueryForm" style="text-align:center;padding:2rem 0;" class="sub-text">No support queries yet.</div>
+            <div *ngFor="let q of queries" class="history-item">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div>
+                  <div style="font-weight:600;font-size:.9rem;">{{q.title}}</div>
+                  <div style="font-size:.8rem;color:var(--text-muted);margin-top:.2rem;">{{q.createdDate | date:'dd MMM yyyy, h:mm a'}}</div>
+                </div>
+                <span class="badge" [ngClass]="{'badge-warning':q.status==='Pending'||q.status==='Assigned'||q.status==='Reopened','badge-success':q.status==='Resolved'}">{{q.status}}</span>
+              </div>
+              <p style="font-size:.85rem;color:var(--text-muted);margin-top:.5rem;white-space:pre-wrap;margin-bottom:0;">{{q.description}}</p>
+              <div *ngIf="q.response" style="margin-top:.75rem;padding:.75rem;background:#F0FDF4;border-left:3px solid var(--secondary);border-radius:0 6px 6px 0;font-size:.85rem;">
+                <strong style="color:var(--secondary);">Agent Reply:</strong>
+                <p style="margin:.25rem 0 0;color:var(--text-main);">{{q.response}}</p>
+              </div>
+              <div *ngIf="q.status==='Resolved'" style="margin-top:.75rem;">
+                <button class="btn-secondary" style="font-size:.75rem;padding:.3rem .75rem;" (click)="reopenQuery(q.id)">↩ Reopen</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- BROWSE PLANS -->
+      <div *ngIf="activeSection==='browse'">
+        <div style="margin-bottom:1.5rem;">
+          <h2 class="header-text" style="font-size:1.6rem;">Browse Insurance Plans</h2>
+          <p class="sub-text">Choose a plan that fits your needs and purchase securely.</p>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+          <button class="ticket-tab-btn" [class.active]="planFilter===''" (click)="planFilter=''">All</button>
+          <button *ngFor="let t of planTypes" class="ticket-tab-btn" [class.active]="planFilter===t" (click)="planFilter=t">{{t}}</button>
+        </div>
+        <div *ngIf="allPlans.length===0" style="text-align:center;padding:3rem 0;" class="sub-text">Loading plans…</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;">
+          <div *ngFor="let p of filteredPlans" class="plan-card">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem;">
+                <h3 style="font-size:1rem;font-weight:700;margin:0;">{{p.name}}</h3>
+                <span class="badge badge-success" style="font-size:.7rem;">{{p.type}}</span>
+              </div>
+              <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:.5rem;line-height:1.6;"><strong style="color:var(--text-main);">Coverage:</strong> {{p.coverage}}</div>
+              <div style="font-size:.82rem;color:var(--text-muted);line-height:1.6;"><strong style="color:var(--text-main);">Terms:</strong> {{p.terms}}</div>
+            </div>
+            <div>
+              <hr style="border:0;border-top:1px solid var(--border);margin:1rem 0;">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                  <span style="font-size:1.4rem;font-weight:700;color:var(--primary);">₹{{p.premium}}</span>
+                  <span style="font-size:.75rem;color:var(--text-muted);">/mo</span>
+                </div>
+                <button class="btn-primary" style="padding:.5rem 1rem;font-size:.85rem;" (click)="buyPolicy(p)">Purchase</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>

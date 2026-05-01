@@ -1,0 +1,66 @@
+<nav class="agent-nav">
+  <div>
+    <h1 class="nav-title">Agent Console</h1>
+    <p class="nav-sub">Welcome, {{ userName }}</p>
+  </div>
+  <div class="nav-right">
+    <app-notification></app-notification>
+    <button class="btn-logout" (click)="logout()">Log Out</button>
+  </div>
+</nav>
+
+<div class="page-container animated-enter">
+  <h2 class="header-text">My Active Ticket</h2>
+  <p class="sub-text" style="margin-bottom:2rem;">The system assigns you one query at a time. When you resolve it, the next one from the queue will be automatically assigned to you.</p>
+
+  <div class="stats-grid">
+    <div class="glass-panel stat-panel">
+      <h4 class="stat-heading">CURRENTLY ASSIGNED</h4>
+      <p class="stat-val warning">{{ stats?.assignedQueries ?? 0 }}</p>
+    </div>
+    <div class="glass-panel stat-panel">
+      <h4 class="stat-heading">TOTAL RESOLVED</h4>
+      <p class="stat-val success">{{ stats?.resolvedQueries ?? 0 }}</p>
+    </div>
+    <div class="glass-panel stat-panel">
+      <h4 class="stat-heading">IN QUEUE</h4>
+      <p class="stat-val">{{ stats?.pendingInQueue ?? 0 }}</p>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="glass-panel" style="text-align:center;">
+    <span class="sub-text">Loading your assignment...</span>
+  </div>
+
+  <div *ngIf="!isLoading && !assignedQuery" class="glass-panel empty-state">
+    <div class="empty-icon">✅</div>
+    <h3 class="header-text">Queue is clear!</h3>
+    <p class="sub-text">You have no active ticket right now. New queries will be auto-assigned to you as they come in.</p>
+    <p class="sub-text" style="margin-top:0.5rem;"><strong>Pending in queue:</strong> <span class="badge badge-warning" style="margin-left:0.5rem;">{{ queueCount }}</span></p>
+    <button class="btn-secondary" style="margin-top:1.5rem;" (click)="loadAssignment()">Refresh</button>
+  </div>
+
+  <div *ngIf="!isLoading && assignedQuery" class="glass-panel ticket-panel">
+    <div class="ticket-header">
+      <div>
+        <span class="badge badge-warning" style="margin-bottom:0.5rem;">ACTIVE TICKET #{{ assignedQuery.id }}</span>
+        <h3 class="header-text" style="margin:0.25rem 0 0;">{{ assignedQuery.title }}</h3>
+      </div>
+      <button class="btn-secondary" style="font-size:0.75rem;" (click)="downloadAttachment(assignedQuery.id)">📎 Download Attachment</button>
+    </div>
+    <div class="query-body">
+      <label class="form-label" style="font-size:0.75rem;">Customer's Query</label>
+      <p style="white-space:pre-wrap;margin:0.25rem 0 0;">{{ assignedQuery.description }}</p>
+    </div>
+    <div>
+      <label class="form-label">Your Resolution</label>
+      <textarea class="form-control" [(ngModel)]="responseText" placeholder="Type your detailed resolution here..." rows="5" style="margin-top:0.5rem;"></textarea>
+      <button class="btn-primary" style="margin-top:1rem;width:100%;" [disabled]="isResolving" (click)="resolveQuery()">
+        {{ isResolving ? 'Resolving...' : 'Resolve & Close Ticket' }}
+      </button>
+    </div>
+    <div *ngIf="queueCount > 0" class="queue-notice">
+      <p class="sub-text" style="margin:0;">🕐 <strong>{{ queueCount }}</strong> more {{ queueCount === 1 ? 'query' : 'queries' }} waiting in queue. The next one will be auto-assigned once you resolve this ticket.</p>
+    </div>
+  </div>
+</div>

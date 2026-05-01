@@ -1,0 +1,21 @@
+.agent-nav { background:var(--primary); color:white; padding:1rem 2rem; display:flex; justify-content:space-between; align-items:center; }
+.nav-title  { color:white; margin:0; font-size:1.5rem; font-weight:700; }
+.nav-sub    { color:rgba(255,255,255,0.75); font-size:0.85rem; margin:0.1rem 0 0; }
+.nav-right  { display:flex; gap:1rem; align-items:center; }
+.btn-logout { color:var(--danger); border-color:transparent; background:white; padding:0.5rem 1rem; border-radius:var(--radius-md); font-weight:500; cursor:pointer; border:1px solid transparent; transition:all 0.2s; }
+.btn-logout:hover { background:#FEE2E2; }
+
+.stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:2rem; }
+.stat-panel { text-align:center; padding:1rem; }
+.stat-heading { margin:0; font-size:0.75rem; color:var(--text-muted); font-weight:600; }
+.stat-val { margin:0.25rem 0 0; font-size:1.5rem; font-weight:700; }
+.stat-val.warning { color:var(--warning); }
+.stat-val.success { color:var(--secondary); }
+
+.empty-state { text-align:center; padding:3rem; }
+.empty-icon  { font-size:3rem; margin-bottom:1rem; }
+
+.ticket-panel { max-width:700px; margin:0 auto; }
+.ticket-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem; }
+.query-body { background:rgba(0,0,0,0.03); padding:1rem; border-radius:var(--radius-md); margin-bottom:1.5rem; border-left:3px solid var(--primary); }
+.queue-notice { margin-top:1.5rem; padding:0.75rem; border-radius:var(--radius-md); background:rgba(79,70,229,0.05); border:1px solid var(--border); }

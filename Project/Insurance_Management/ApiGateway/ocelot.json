@@ -1,0 +1,106 @@
+{
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/api/auth/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 5257 }
+      ],
+      "DownstreamPathTemplate": "/api/auth/{everything}"
+    },
+    {
+      "UpstreamPathTemplate": "/api/admin/stats/policies",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 5169 }
+      ],
+      "DownstreamPathTemplate": "/api/admin/stats/policies"
+    },
+    {
+      "UpstreamPathTemplate": "/api/admin/stats/claims",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 5239 }
+      ],
+      "DownstreamPathTemplate": "/api/admin/stats/claims"
+    },
+    {
+      "UpstreamPathTemplate": "/api/admin/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 5257 }
+      ],
+      "DownstreamPathTemplate": "/api/admin/{everything}"
+    },
+    {
+      "UpstreamPathTemplate": "/api/agent/stats",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 5239 }
+      ],
+      "DownstreamPathTemplate": "/api/agent/stats"
+    },
+    {
+      "UpstreamPathTemplate": "/api/claim/upload",
+      "UpstreamHttpMethod": [ "POST" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 5239 }
+      ],
+      "DownstreamPathTemplate": "/api/claim/upload"
+    },
+    {
+      "UpstreamPathTemplate": "/api/claim/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 5239 }
+      ],
+      "DownstreamPathTemplate": "/api/claim/{everything}"
+    },
+    {
+      "UpstreamPathTemplate": "/api/query/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 5239 }
+      ],
+      "DownstreamPathTemplate": "/api/query/{everything}"
+    },
+    {
+      "UpstreamPathTemplate": "/api/notification/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 5286 }
+      ],
+      "DownstreamPathTemplate": "/api/notification/{everything}"
+    },
+    {
+      "UpstreamPathTemplate": "/api/payment/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 5013 }
+      ],
+      "DownstreamPathTemplate": "/api/payment/{everything}"
+    },
+    {
+      "UpstreamPathTemplate": "/api/policy/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 5169 }
+      ],
+      "DownstreamPathTemplate": "/api/policy/{everything}"
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:5199"
+  }
+}

@@ -1,0 +1,43 @@
+<div class="auth-page">
+  <div class="auth-card glass-panel animated-enter">
+    <div class="auth-logo">🛡️</div>
+    <h2 class="header-text auth-title">Get Started</h2>
+    <p class="sub-text auth-sub">Create your customer account</p>
+
+    <div *ngIf="!isOtpStep">
+      <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-control" [(ngModel)]="userData.name" name="fullName" required placeholder="John Doe">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" [(ngModel)]="userData.email" name="email" required placeholder="john@example.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control" [(ngModel)]="userData.password" name="password" required minlength="8" placeholder="Min 8 chars, uppercase & number">
+        </div>
+        <div *ngIf="errorMsg" class="error-msg">{{ errorMsg }}</div>
+        <button type="submit" class="btn-primary btn-full">Register</button>
+      </form>
+      <div class="auth-footer">
+        <span class="sub-text">Already have an account? </span>
+        <a class="link" (click)="navigateToLogin()">Sign In</a>
+      </div>
+    </div>
+
+    <div *ngIf="isOtpStep" class="animated-enter">
+      <p class="sub-text" style="text-align:center;margin-bottom:1rem;">An OTP has been sent to <strong>{{userData.email}}</strong>. Enter it below to verify your account.</p>
+      <form (ngSubmit)="verifyOtp()" #otpForm="ngForm">
+        <div class="form-group">
+          <label class="form-label">Enter 6-digit OTP</label>
+          <input type="text" class="form-control otp-input" [(ngModel)]="otp" name="otp" required minlength="6" maxlength="6">
+        </div>
+        <div *ngIf="successMsg" class="success-msg">{{ successMsg }}</div>
+        <div *ngIf="errorMsg" class="error-msg">{{ errorMsg }}</div>
+        <button type="submit" class="btn-primary btn-full" [disabled]="!otpForm.valid">Verify & Activate</button>
+      </form>
+    </div>
+  </div>
+</div>
